@@ -80,7 +80,7 @@ For multiple cameras add the `MultiCameraEvents` script anywhere in scene.
 - Drag the `UPixelator` prefab into scene and you should immediatelly see the pixelated effect
 - Drag the `UPixelator - Canvas` prefab into scene to get the runtime UI controls
 - Set a resolution (ex. 1920x1080) that is a multiple of a chosen `UPixelator.pixelMultiplier` number
-- Set `Scale: 1` to have pixels render 1 on 1
+- Set `Scale: 1` in game window to have pixels render 1 on 1
 - [Built-in] If you have postprocess move `PostProcessLayer` and `PostProcessVolume` from MainCamera to the UPixelator gameObject
 
 ## Fine tuning
@@ -92,7 +92,7 @@ For multiple cameras add the `MultiCameraEvents` script anywhere in scene.
 - [Built-in] Set `Quality > Shadow Projection: Stable Fit`
 
 ## UI
-To make a `RectTranform` follow a world `Transform` parent one under the other and attach `FollowTransformUI.cs`.  
+To make a `RectTranform` follow a world `Transform` parent one under the other and attach `FollowTransformUI.cs`  
 
 ## Legacy text font resolution:
   - Set font rendering mode to `Hinted Raster` and character to `ASCII default set`
@@ -114,8 +114,7 @@ To make a `RectTranform` follow a world `Transform` parent one under the other a
 - If changing the `pixelMultiplier` shows a blurry screen, please hover the mouse over the game window to force the initial render
 
 ## In progress/research
-- [In v2 Beta] wip Parallax and better handling of multiple cameras
+- [WIP] Parallax effect with multiple cameras
 - [HDRP] targetTexture with lower resolution does not render full screen rect
-- [Built-in] WebGL targetTexture goes black on fullscreen
 - Skinned mesh hierarchy snapping after animation
 - Ocassional pixel flicker on alpha clipped textures or geometry edges
