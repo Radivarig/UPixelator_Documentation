@@ -3,18 +3,26 @@
 Thank you for purchasing UPixelator! ❤️  
 If you like the asset I would appreciate your review!  
 
+**AssetStore Reviews bug:**  
+If you only see this message "Please download this asset to leave a review":  
+Click on one of the N star blue rows and the "Write a Review" button will show up.  
+
 ## Contact
 If you have any questions or feedback, please contact me at reslav.hollos@gmail.com.  
-You can also join the [Discord server](https://discord.gg/uFEDDpS8ad)  
+You can also join the [Discord server](https://discord.gg/uFEDDpS8ad)!  
+
+## How to update!
+### v2 -> v2.1.0
+- Please first delete `Assets/Abiogenesis3d` and `Assets/Editor/Abiogenesis3d` folders
+- [Pixel Art Edge Highlights] install minimum v1.3 version
+### v1 -> v2
+- Please first delete `Assets/Abiogenesis3d` and `Assets/Editor/Abiogenesis3d` folders
+- [Pixel Art Edge Highlights] install minimum v1.1 version
 
 ## Quick start
 - Drag and drop `Prefabs/UPixelator` into scene.  
 - Or open the scene under the `Example/Scenes` folder.  
 - Otherwise go to the [Setup](#setup) section of this readme.  
-
-## Upgrade v1 to v2
-- Please first remove `Abiogenesis3d` and `Editor/Abiogenesis3d` folders
-- [Pixel Art Edge Highlights] update to minimum v1.1 version
 
 ## Description
 `UPixelator` is a shaderless solution for pixelating 3d scenes with pixel creep reduction for orthographic camera.  
@@ -26,7 +34,7 @@ It provides the base for creating Pixel Art style games with 3d models.
 
 ## Modules
 - [Pixel Art Edge Highlights](https://assetstore.unity.com/packages/slug/263418)
-  
+
 ## Render pipelines
 - Built-in ✓
 - URP ✓
@@ -66,14 +74,19 @@ If your original render is heavy you might even get a performance gain since onl
 Finding Snappables is cached and not executed every frame.  
 
 ## Mouse Events
-For a single camera events should work out of the box.
-For multiple cameras add the `MultiCameraEvents` script anywhere in scene.
+- For a single camera events should work out of the box
+- For multiple cameras add the `MultiCameraEvents` script anywhere in scene
+
+## Multi Camera Events
+This works by emulating correct events after blocking incorrect default ones with an invisible collider.  
+For `RaycastAll` you can use `if (hit.collider.name.StartsWith(MultiCameraEvents.raycastBlockerName)) continue;` to skip it.  
 
 ## Please note
 - Rotation will always have some pixel creep but it's less noticeable with higher rotation speed
 - Zig-zag will occur for all snapped moving objects, but is less noticeable with higher movement speed
 - Resolution must be set and be divisible with pixelMultiplier
 - Large screen space effects are not supported but repeating patterns like 2,4,8,16 pixels wide are
+- There should be a single active instance of the script in the project and additional instances will deactivate themselves
 
 # 
 # Setup
@@ -109,9 +122,7 @@ To make a `RectTranform` follow a world `Transform` parent one under the other a
   - Texture's resolution from these assets have been lowered to achieve a smalled unitypackage size
 
 ## Known issues
-- [URP] If you get `No Universal Render Pipeline is currently active` please check references under `Project Settings > Quality`
-  - This can happen is you deleted some pipeline asset files under the `Settings` folder
-- If changing the `pixelMultiplier` shows a blurry screen, please hover the mouse over the game window to force the initial render
+- When switching build targets, select a supported UPixelator.GraphicsFormat for it
 
 ## In progress/research
 - [WIP] Parallax effect with multiple cameras
