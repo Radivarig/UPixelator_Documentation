@@ -74,19 +74,15 @@ If your original render is heavy you might even get a performance gain since onl
 Finding Snappables is cached and not executed every frame.  
 
 ## Mouse Events
-- For a single camera events should work out of the box
-- For multiple cameras add the `MultiCameraEvents` script anywhere in scene
-
-## Multi Camera Events
-This works by emulating correct events after blocking incorrect default ones with an invisible collider.  
-For `RaycastAll` you can use `if (hit.collider.name.StartsWith(MultiCameraEvents.raycastBlockerName)) continue;` to skip it.  
+When rendering to a texture or using multiple cameras, mouse events stop working properly.
+This is solved in `MultiCameraEvents` script which is automatically added by the `UPixelator` script.
+It works by stopping incorrect default events with `camera.eventMask = 0` and emitting correct ones.
 
 ## Please note
 - Rotation will always have some pixel creep but it's less noticeable with higher rotation speed
 - Zig-zag will occur for all snapped moving objects, but is less noticeable with higher movement speed
-- Resolution must be set and be divisible with pixelMultiplier
 - Large screen space effects are not supported but repeating patterns like 2,4,8,16 pixels wide are
-- There should be a single active instance of the script in the project and additional instances will deactivate themselves
+- Resolution must be set and be divisible with pixelMultiplier (work in progress on this)
 
 # 
 # Setup
@@ -122,10 +118,11 @@ To make a `RectTranform` follow a world `Transform` parent one under the other a
   - Texture's resolution from these assets have been lowered to achieve a smalled unitypackage size
 
 ## Known issues
-- When switching build targets, select a supported UPixelator.GraphicsFormat for it
+- [URP] Consecutive cameras do not work with `Post Process` enabled [Forum](https://forum.unity.com/threads/1265873/)
+- Using MovePosition in FixedUpdate has to be limited to 60fps [Forum](https://forum.unity.com/threads/1389540/)
+- Ocassional pixel flicker on alpha clipped textures or geometry edges
 
 ## In progress/research
 - [WIP] Parallax effect with multiple cameras
 - [HDRP] targetTexture with lower resolution does not render full screen rect
 - Skinned mesh hierarchy snapping after animation
-- Ocassional pixel flicker on alpha clipped textures or geometry edges
