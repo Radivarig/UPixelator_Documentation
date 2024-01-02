@@ -67,8 +67,15 @@ indistinguishable like flat colors where normals are equal, see screenshots with
 - Lower values from `0.2` to `0.5` are suggested to get nice colored edges just enough to make the highlights differentiate geometry.
 
 ## Excluding objects from the effect
-The effect is set to execute before transparents so to exclude an object set its render queue to 3000+.
+1. [URP] Render objects you want to exclude on a specific layer with a `Render Objects` feature:
+  - Add a new layer called `IgnoreEffect` and put your objects on it
+  - Add a new `Render Objects` renderer feature to the URP renderer asset and set:
+    - `Event: BeforeRenderingTransparents`
+    - `Queue: Opaque`
+    - `LayerMask: IgnoreEffect`
+    - `Override Mode: None`
 
+2. The effect executes before transparents so materials with render queue 3000+ are excluded.
 - On a material you want to exclude check for `Custom Render Queue` and if it's hidden try with inspector Debug mode
   - To open the inspector Debug mode click the tripple dots icon next to the Lock icon in the upper right corner of any inspector window
 - [URP] If setting it to 3000 clamps it back to 2000 it is a bug in Unity that was fixed several times but is again back.
