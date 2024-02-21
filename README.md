@@ -12,6 +12,9 @@ If you have any questions or feedback, please contact me at reslav.hollos@gmail.
 You can also join the [Discord server](https://discord.gg/uFEDDpS8ad)!  
 
 ## How to update!
+### v2 -> v3
+- Please first delete `Assets/Abiogenesis3d`
+- Remove previous `UPixelator` prefabs or other scripts from scenes
 ### v2 -> v2.1.0
 - Please first delete `Assets/Abiogenesis3d` and `Assets/Editor/Abiogenesis3d` folders
 - [Pixel Art Edge Highlights] install minimum v1.3 version
@@ -34,6 +37,7 @@ It provides the base for creating Pixel Art style games with 3d models.
 
 ## Modules
 - [Pixel Art Edge Highlights](https://assetstore.unity.com/packages/slug/263418)
+- [Campfire (3d Pixel Art)](https://assetstore.unity.com/packages/slug/277510) (included)
 
 ## Render pipelines
 - Built-in ✓
@@ -44,19 +48,18 @@ Unity 2021.3 (Builtin, URP 12): Windows, WebGL
 Unity 2022.3 (Builtin, URP 14): Windows, WebGL  
 
 ## Shaderless
-Requires no special shaders so you can keep your existing materials.
+Requires no special shaders so you can keep your existing materials.  
+> Some restrictions apply for screen space effects, please see [Shader limitations](#shader-limitations) section.  
 
 ## Pixelization
-Achieved by rendering to a lower resolution render texture and upscaling to fit the screen.
+Achieved by rendering to a lower resolution render texture and upscaling to fit the screen.  
+A second camera then renders those pixelated camera outputs and doubles as a UI camera.  
 
 ## Pixel Creep reduction
-Camera and tagged objects are snapped to a grid of world space pixel size resulting in the same pixel colors being rendered while moving.
+Camera and tagged objects are snapped to a grid of world space pixel size resulting in the same pixel colors being rendered while moving.  
 
 ## Subpixel stabilization
-Snapping to pixel size grid makes the camera shake so subpixel offset is applied in the game resolution based on the snap position difference.
-
-## UI
-Includes scripts for making canvas elements follow a world transform in canvas overlay mode.
+Snapping camera to pixel size grid makes it shake so subpixel offset is applied in the game resolution based on the snap position difference.  
 
 ## How the asset works
 1. Camera gets snapped to a grid of size of a pixel in world space which makes pixel colors consistent but shows a zig-zag movement.  
@@ -74,23 +77,40 @@ If your original render is heavy you might even get a performance gain since onl
 Finding Snappables is cached and not executed every frame.  
 
 ## Mouse Events
-When rendering to a texture or using multiple cameras, mouse events stop working properly.
-This is solved in `MultiCameraEvents` script which is automatically added by the `UPixelator` script.
-It works by stopping incorrect default events with `camera.eventMask = 0` and emitting correct ones.
+When rendering to a texture or using multiple cameras, mouse events stop working properly.  
+This is solved in `MultiCameraEvents` script which is automatically added by the `UPixelator` script.  
+It works by stopping incorrect default events with `camera.eventMask = 0` and emitting correct ones.  
 
-## Please note
-- Rotation will always have some pixel creep but it's less noticeable with higher rotation speed
-- Zig-zag will occur for all snapped moving objects, but is less noticeable with higher movement speed
-- Large screen space effects are not supported but repeating patterns like 2,4,8,16 pixels wide are
-- Resolution must be set and be divisible with pixelMultiplier (work in progress on this)
+## Snappables
+Since snapping to a grid is what makes the pixel colors stable, moving objects will flicker by default.  
+To prevent flickering `UPixelatorSnappable` can be attached which makes them snap to the same grid as the camera.  
+This will however introduce zig-zag motion which is less noticeable with higher movement speed.  
+> This will be mitigated with diagonal stabilization (WIP feature: snappable.stabilizeDiagonal).  
+
+## Shader limitations
+
+#### Screen Space
+Large screen space effects are not supported but repeating patterns like 2,4,8 pixels wide are, see `uPixelator.ditherRepeatSize`.  
+Eg. skybox position will not be correct as it's fixed in screen space so when camera snaps subpixel offset will move the skybox.  
+> This can be mitigated with a separate skybox camera (WIP feature: camInfo.renderHandler.parallax).  
+
+#### Ocassional pixel flicker
+Ocassional pixel flicker might happen on alpha clipped textures or geometry edges.  
+Unity does not treat orthographic cameras as truely infinitely distant and infinitely zoomed in.  
+Because of that the lights slightly move with the camera and change color intensities for specular/reflective materials.  
+> This can be mitigated by moving the camera backwards from player position as screen size is the same, see `camController.extraOrthoOffset`.  
+
+## Resolution
+- Works with both a set resolution or with `Free Aspect` even when resizing the game window
+- Maintains pixel size and adjusts orthographicSize to keep objects the same size on screen
+- Supports changing screen size from even to odd game window size without flickering
+> Additional checkboxes needed to get it working with custom scripts for zoom, see `camInfos.renderHandler > Orthographic Size Correction`.  
 
 # 
 # Setup
-- Drag the `UPixelator` prefab into scene and you should immediatelly see the pixelated effect
+- Drag the `UPixelator` prefab into scene and you should immediatelly get the pixelated effect
 - Drag the `UPixelator - Canvas` prefab into scene to get the runtime UI controls
-- Set a resolution (ex. 1920x1080) that is a multiple of a chosen `UPixelator.pixelMultiplier` number
 - Set `Scale: 1` in game window to have pixels render 1 on 1
-- [Built-in] If you have postprocess move `PostProcessLayer` and `PostProcessVolume` from MainCamera to the UPixelator gameObject
 
 ## Fine tuning
 - When setting camera.targetTexture with lower resolution Unity uses mipmaps and reduces the texture resolution
@@ -101,7 +121,8 @@ It works by stopping incorrect default events with `camera.eventMask = 0` and em
 - [Built-in] Set `Quality > Shadow Projection: Stable Fit`
 
 ## UI
-To make a `RectTranform` follow a world `Transform` parent one under the other and attach `FollowTransformUI.cs`  
+- [World Space] works by setting `uPixelator.mirrorCamera` and adding the elements to the selected `uPixelator.layerMaskUI` layer
+- [Overlay] To follow a world `Transform` parent the element to it and attach `FollowTransformUI.cs`
 
 ## Legacy text font resolution:
   - Set font rendering mode to `Hinted Raster` and character to `ASCII default set`
@@ -118,11 +139,11 @@ To make a `RectTranform` follow a world `Transform` parent one under the other a
   - Texture's resolution from these assets have been lowered to achieve a smalled unitypackage size
 
 ## Known issues
-- [URP] Consecutive cameras do not work with `Post Process` enabled [Forum](https://forum.unity.com/threads/1265873/)
-- Using MovePosition in FixedUpdate has to be limited to 60fps [Forum](https://forum.unity.com/threads/1389540/)
-- Ocassional pixel flicker on alpha clipped textures or geometry edges
+- [URP] Consecutive cameras do not work with `Post Process` enabled [Forum](https://forum.unity.com/threads/1265873)
+- Using rigidbody.MovePosition with Snappables throttles movement [Forum](https://forum.unity.com/threads/1389540)
 
 ## In progress/research
-- [WIP] Parallax effect with multiple cameras
+- [WIP] Parallax effect for multiple cameras
+- Diagonal movement stabilization for snappables
+- Perspective camera example for non pixelated world space canvas elements
 - [HDRP] targetTexture with lower resolution does not render full screen rect
-- Skinned mesh hierarchy snapping after animation
